@@ -1,0 +1,27 @@
+spring:
+    datasource:
+        name: SmtpDataSource
+        driver-class-name: org.h2.Driver
+        url: jdbc:h2:mem:smtp_db;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+        username: smtp_schema
+        password: smtp_schema
+        max-active: 10
+        max-idle: 8
+        min-idle: 5
+        initial-size: 1    
+        test-while-idle: true
+    jpa:
+        show-sql: true
+        generate-ddl: true
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.H2Dialect
+
+    mvc:
+        view:
+            prefix: /WEB-INF/html/
+            suffix: .html
+server:
+    port: 8088

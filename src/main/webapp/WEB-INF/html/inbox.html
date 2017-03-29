@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8" />
+<title>Inbox</title>
+<link rel="stylesheet" type="text/css" href="css/datatables.min.css" />
+<script type="text/javascript" src="/js/moment.min.js"></script>
+<script type="text/javascript" src="/js/datatables.min.js"></script>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">Inbox</div>
+					<table id="example" class="table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Subject</th>
+								<th>Datetime</th>
+								<th>From</th>
+								<th>To</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-12" id="result">
+			<iframe src="/email.html" width="80%" height="600" id='frameDemo' style="border:0"></iframe> </div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			var showEmail = function(id){
+				$.ajax({
+					url : "/api/email/"+id,
+					cache : false
+				}).done(function(email) {
+					$("#frameDemo").contents().find("body").html("<b>"+email.subject+"</b>"+email.emailBody);
+					//$("#result").html(html.emailBody);
+				});
+			};
+			var table = $('#example').DataTable({
+				"ajax" : "/api/inbox",
+				"columns" : [{
+					"data": "id"
+				}, {
+					"data" : "subject"
+				}, {
+					"data" : "createDate"
+				}, {
+					"data" : "from"
+				}, {
+					"data" : "recipient"
+				} ],
+				"columnDefs": [ {
+		            "targets": 2,
+		            "render": function ( data, type, row ) {
+	                    return moment(data).format("YYYY-MM-DD HH:mm:ss");
+	                },
+		        },{
+		            "targets": 5,
+		            "data": null,
+		            "defaultContent": "<button>View</button>"
+		        }]
+			});
+			$('#example tbody').on( 'click', 'button', function () {
+		        var data = table.row( $(this).parents('tr') ).data();
+		        showEmail( data.id);
+		    } );
+		});
+		
+	</script>
+</body>
+</html>
