@@ -36,11 +36,13 @@ public class ScheduledTasks {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private static final String MAIN_PATH = "./target/inbox/";
+
     @Autowired
     private SimpleSmtpServer server;
     
     @Autowired
     private InboxService service;
+
     @Autowired
 	private SessionFactory sessionFactory;
 
@@ -74,7 +76,7 @@ public class ScheduledTasks {
 				inboxData.setFrom(email.getHeaderValue("From"));
 				inboxData.setRecipient(email.getHeaderValue("To"));
 				service.save(inboxData);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
         	emailIter.remove();
