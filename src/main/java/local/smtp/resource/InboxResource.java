@@ -40,11 +40,11 @@ public class InboxResource {
 	}
 	
 	@RequestMapping(value = "/inbox/filter", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<InboxResponse> findByRecipient(@RequestParam String recipient, 
+	public ResponseEntity<InboxResponse> findByRecipient(@RequestParam String subject, @RequestParam String recipient, 
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date fromDate, 
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date toDate){
 		InboxResponse response = new InboxResponse();
-		response.setData(service.findByRecipient(recipient, fromDate, toDate));
+		response.setData(service.findByRecipient(subject, recipient, fromDate, toDate));
 		return new ResponseEntity<InboxResponse>(response, HttpStatus.OK);
 	}
 }

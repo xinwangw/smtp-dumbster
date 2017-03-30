@@ -33,12 +33,13 @@ public class InboxService {
 		repo.deleteAllInBatch();
 	}
 	
-	public List<Inbox> findByRecipient(String recipient, Date createDateFrom, Date createDateTo){
+	public List<Inbox> findByRecipient(String subject, String recipient, Date createDateFrom, Date createDateTo){
+		subject = "%"+subject+"%";
 		recipient = "%"+recipient+"%";
 		if (createDateFrom ==null)
 			createDateFrom = new Date(0);
 		if (createDateTo ==null)
 			createDateTo = new DateTime(9999,12,31,0,0,0).toDate();
-		return repo.findByRecipientInPeriod(recipient, createDateFrom, createDateTo);
+		return repo.findByRecipientInPeriod(subject, recipient, createDateFrom, createDateTo);
 	}
 }
