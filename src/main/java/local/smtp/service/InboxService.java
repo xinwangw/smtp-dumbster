@@ -1,7 +1,9 @@
 package local.smtp.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,5 +31,14 @@ public class InboxService {
 	
 	public void clearAll(){
 		repo.deleteAllInBatch();
+	}
+	
+	public List<Inbox> findByRecipient(String recipient, Date createDateFrom, Date createDateTo){
+		recipient = "%"+recipient+"%";
+		if (createDateFrom ==null)
+			createDateFrom = new Date(0);
+		if (createDateTo ==null)
+			createDateTo = new DateTime(9999,12,31,0,0,0).toDate();
+		return repo.findByRecipientInPeriod(recipient, createDateFrom, createDateTo);
 	}
 }
