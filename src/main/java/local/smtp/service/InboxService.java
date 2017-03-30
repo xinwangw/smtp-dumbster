@@ -26,4 +26,8 @@ public class InboxService {
 	public Inbox findOne(long id){
 		return repo.findOne(id);
 	}
+	
+	public void clearAll(){
+		repo.deleteAllInBatch();
+	}
 }

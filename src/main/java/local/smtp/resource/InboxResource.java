@@ -1,7 +1,5 @@
 package local.smtp.resource;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +27,11 @@ public class InboxResource {
 	@RequestMapping(value = "/email/{id}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Inbox> inbox(@PathVariable Long id){
 		return new ResponseEntity(service.findOne(id), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/inbox", method = RequestMethod.DELETE, produces = "application/json")
+	public ResponseEntity<String> deleteAll(){
+		service.clearAll();
+		return new ResponseEntity("Deleted All.", HttpStatus.OK);
 	}
 }

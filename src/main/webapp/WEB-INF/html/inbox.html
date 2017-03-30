@@ -7,12 +7,21 @@
 <script type="text/javascript" src="/js/datatables.min.js"></script>
 </head>
 <body>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        SMTP SIMULATOR INBOX
+      </a>
+    </div>
+  </div>
+</nav>
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-md-12">
 				<div class="panel panel-default">
 					<!-- Default panel contents -->
-					<div class="panel-heading">Inbox</div>
+					<div class="panel-heading">Inbox <button id="clearInbox">Clear</button></div>
 					<table id="example" class="table">
 						<thead>
 							<tr>
@@ -33,6 +42,9 @@
 	</div>
 	<script>
 		$(document).ready(function() {
+			var clearEmailFrame = function(){
+				$("#frameDemo").contents().find("body").html("");
+			};
 			var showEmail = function(id){
 				$.ajax({
 					url : "/api/email/"+id,
@@ -64,12 +76,29 @@
 		            "targets": 5,
 		            "data": null,
 		            "defaultContent": "<button>View</button>"
-		        }]
+		        }],
+		        "order": [[ 2, "desc" ]]
 			});
 			$('#example tbody').on( 'click', 'button', function () {
 		        var data = table.row( $(this).parents('tr') ).data();
+		        $('#example tbody tr').removeClass('selected');
+		        $(this).parents('tr').addClass('selected');
 		        showEmail( data.id);
 		    } );
+			$('#clearInbox').on( 'click', function () {
+				$.ajax({
+					url : "/api/inbox/",
+					method : "DELETE"
+				}).always(function() {
+					console.log("reload");
+					table.ajax.reload().draw();
+					clearEmailFrame();
+				});
+		    } );
+			setInterval( function () {
+			    table.ajax.reload().draw();
+			    clearEmailFrame();
+			}, 30000 );
 		});
 		
 	</script>
