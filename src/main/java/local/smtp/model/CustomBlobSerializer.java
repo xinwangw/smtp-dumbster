@@ -11,8 +11,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustomBlobSerializer extends JsonSerializer<Blob>{
+	private static final Logger log = LoggerFactory.getLogger(CustomBlobSerializer.class);
 
 	@Override
 	public void serialize(Blob value, JsonGenerator gen, SerializerProvider serializers)
@@ -20,8 +23,7 @@ public class CustomBlobSerializer extends JsonSerializer<Blob>{
 		try {
 			gen.writeString(new String(value.getBytes(0, (int) value.length())));
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error when serialize Blob object.",e);
 		}
 	}
 

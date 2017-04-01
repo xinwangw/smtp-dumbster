@@ -1,106 +1,118 @@
 <!DOCTYPE html>
 <head>
-<meta charset="UTF-8" />
-<title>Inbox</title>
-<link rel="stylesheet" type="text/css" href="css/datatables.min.css" />
-<script type="text/javascript" src="/js/moment.min.js"></script>
-<script type="text/javascript" src="/js/datatables.min.js"></script>
+	<meta charset="UTF-8"/>
+	<title>Inbox</title>
+	<link rel="stylesheet" type="text/css" href="css/datatables.min.css"/>
+	<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	<script type="text/javascript" src="/js/moment.min.js"></script>
+	<script type="text/javascript" src="/js/datatables.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">
-        SMTP SIMULATOR INBOX
-      </a>
-    </div>
-  </div>
-</nav>
 	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-12">
-				<div class="panel panel-default">
-					<!-- Default panel contents -->
-					<div class="panel-heading">Inbox <button id="clearInbox">Clear</button></div>
-					<table id="example" class="table">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>Subject</th>
-								<th>Datetime</th>
-								<th>From</th>
-								<th>To</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-					</table>
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				SMTP SIMULATOR INBOX
+			</a>
+		</div>
+	</div>
+</nav>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">Inbox
+					<button id="clearInbox" class="pull-right">Clear Inbox</button>
 				</div>
+				<table id="example" class="table">
+					<thead>
+					<tr>
+						<th>ID</th>
+						<th>Subject</th>
+						<th>Datetime</th>
+						<th>From</th>
+						<th>To</th>
+						<th>Action</th>
+					</tr>
+					</thead>
+				</table>
 			</div>
-			<div class="col-md-12" id="result">
-			<iframe src="/email.html" width="80%" height="600" id='frameDemo' style="border:0"></iframe> </div>
+		</div>
+		<div class="col-md-12" id="result">
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">View Email: <span id="emailSubject"></span></div>
+				<iframe src="/email.html" width="80%" height="600" id='frameDemo' style="border:0; margin:10px;"></iframe>
+			</div>
 		</div>
 	</div>
 	<script>
-		$(document).ready(function() {
-			var clearEmailFrame = function(){
+		$(document).ready(function () {
+			var clearEmailFrame = function () {
 				$("#frameDemo").contents().find("body").html("");
 			};
-			var showEmail = function(id){
+			var clearEmailViewResult = function () {
+				clearEmailFrame();
+				$("#emailSubject").html("");
+			}
+			var showEmail = function (id) {
 				$.ajax({
-					url : "/api/email/"+id,
-					cache : false
-				}).done(function(email) {
-					$("#frameDemo").contents().find("body").html("<b>"+email.subject+"</b>"+email.emailBody);
+					url: "/api/email/" + id,
+					cache: false
+				}).done(function (email) {
+					$("#emailSubject").html(email.subject);
+					$("#frameDemo").contents().find("body").html(email.emailBody);
 					//$("#result").html(html.emailBody);
 				});
 			};
 			var table = $('#example').DataTable({
-				"ajax" : "/api/inbox",
-				"columns" : [{
+				"ajax": "/api/inbox",
+				"columns": [{
 					"data": "id"
 				}, {
-					"data" : "subject"
+					"data": "subject"
 				}, {
-					"data" : "createDate"
+					"data": "createDate"
 				}, {
-					"data" : "from"
+					"data": "from"
 				}, {
-					"data" : "recipient"
-				} ],
-				"columnDefs": [ {
-		            "targets": 2,
-		            "render": function ( data, type, row ) {
-	                    return moment(data).format("YYYY-MM-DD HH:mm:ss");
-	                },
-		        },{
-		            "targets": 5,
-		            "data": null,
-		            "defaultContent": "<button>View</button>"
-		        }],
-		        "order": [[ 2, "desc" ]]
+					"data": "recipient"
+				}],
+				"columnDefs": [{
+					"targets": 2,
+					"render": function (data, type, row) {
+						return moment(data).format("YYYY-MM-DD HH:mm:ss");
+					},
+				}, {
+					"targets": 5,
+					"data": null,
+					"defaultContent": "<button>View</button>"
+				}],
+				"order": [[2, "desc"]]
 			});
-			$('#example tbody').on( 'click', 'button', function () {
-		        var data = table.row( $(this).parents('tr') ).data();
-		        $('#example tbody tr').removeClass('selected');
-		        $(this).parents('tr').addClass('selected');
-		        showEmail( data.id);
-		    } );
-			$('#clearInbox').on( 'click', function () {
+			$('#example tbody').on('click', 'button', function () {
+				var data = table.row($(this).parents('tr')).data();
+				$('#example tbody tr').removeClass('selected');
+				$(this).parents('tr').addClass('selected');
+				showEmail(data.id);
+			});
+			$('#clearInbox').on('click', function () {
 				$.ajax({
-					url : "/api/inbox/",
-					method : "DELETE"
-				}).always(function() {
+					url: "/api/inbox/",
+					method: "DELETE"
+				}).always(function () {
 					console.log("reload");
 					table.ajax.reload().draw();
-					clearEmailFrame();
+					clearEmailViewResult();
 				});
-		    } );
-			setInterval( function () {
-			    table.ajax.reload().draw();
-			    clearEmailFrame();
-			}, 30000 );
+			});
+			setInterval(function () {
+				table.ajax.reload().draw();
+				clearEmailViewResult();
+			}, 30000);
 		});
-		
+
 	</script>
 </body>
 </html>
